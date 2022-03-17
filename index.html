@@ -20,24 +20,45 @@
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" type="text/css" media="screen" href="main2.css" />
   <script type="text/javascript">
-var reader = new XMLHttpRequest() || new ActiveXObject('MSXML2.XMLHTTP');
-
+var TokenList = new XMLHttpRequest() || new ActiveXObject('MSXML2.XMLHTTP');
+var RouterList = new XMLHttpRequest() || new ActiveXObject('MSXML2.XMLHTTP');
+let FlashLoanContrat = new ethers.Contract(contractAddress, abi, signer);
+let checkToken;
+  //let cash = await Bullbear.Cash(adr);
 function loadFile() {
-    reader.open('get', 'ngaylamviec.txt', true); 
-    reader.onreadystatechange = displayContents;
-    reader.send(null);
+    TokenList.open('get', 'Token.txt', true); 
+    TokenList.onreadystatechange = displayContents;
+    TokenList.send(null);
+    RouterList.open('get', 'Token.txt', true); 
+    RouterList.onreadystatechange = displayContents;
+    RouterList.send(null);
 }
 
 function displayContents() {
-    if(reader.readyState==4) {
-        var allText = reader.responseText; 
-        var lines = reader.responseText.split("\n");
-        
+    if(TokenList.readyState==4 && RouterList.readyState==4) {
+        var TokenallText = TokenList.responseText; 
+        var Tokenlines = TokenList.responseText.split("\n");
+	var RouterallText = RouterList.responseText; 
+        var Routerlines = RouterList.responseText.split("\n");
+        let checkToken;
         var randomNum = Math.floor(Math.random() * lines.length);
         var randomLine = lines[randomNum]
         var el = document.getElementById('infotext');
        // el.innerHTML = reader.responseText;
         el.innerHTML = randomLine;
+	    for(var token = 0; token < Tokenlines.length; token++)
+	    {
+		    for(var router1 = 0; router < Routerlines.length; router1++)
+	    	    {
+			    for(var router2 = 0; router2 < Routerlines.length; router2++)
+	    	    	    {
+			    	checkToken = await FlashLoanContrat.checkToken(Routerlines[router1],Routerlines[router2],wmaticAddress,Tokenlines[token],1000000000000000000);
+			    	if(!checkToken)
+					el.innerHTML=Tokenlines[token];
+			    }
+		    }
+	    }
+	
     }
 }
 
